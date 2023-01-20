@@ -1,0 +1,116 @@
+import ccxt.pro as ccxtpro
+import ccxt as ccxt
+import requests
+import time
+
+ex = {
+    'kucoinfutures':ccxt.kucoinfutures({
+        'password':'here',
+        'apiKey':'here',
+        'secret':'here',
+    }),
+    'kucoin':ccxt.kucoin({
+        'password':'here',
+        'apiKey':'here',
+        'secret':'here',
+    }),
+    'binance':ccxt.binance({
+        'apiKey':'here',
+        'secret':'here',
+    }),
+    'okx':ccxt.okx({
+        'password':'here',
+        'apiKey':'here',
+        'secret':'here',
+    }),
+    'kucoinpro':ccxtpro.kucoin({
+        'password':'here',
+        'apiKey':'here',
+        'secret':'here',
+    }),
+    'binancepro':ccxtpro.binance({
+        'apiKey':'here',
+        'secret':'here',
+    }),
+    'okxpro':ccxtpro.okx({
+        'password':'here',
+        'apiKey':'here',
+        'secret':'here',
+    })
+}
+
+echanges_str = ["binance","kucoin","okx"]
+echanges = [ex['binance'],ex['kucoin'],ex['okx']]
+
+
+fees = {
+    'binance' : {'give':0,"receive":0.001},
+    'kucoin' : {'give':0,"receive":0.001},
+    'okx' : {'give':0,"receive":0.0008},
+}
+
+# telegram API to send everything to you
+
+apiToken = '5936932624:AAF5v1wyDZIRZsYKjmiqMUzoSnzLBuZaZ1c'
+chatID = '5198472708'
+
+# minimum of profits to take the opportunity
+# default to 0 so it takes the opportunity even if this is a 0.001 USD profit. (all fees are already included in the calculation, so it's actual profit)
+
+criteria_pct = 0
+criteria_usd = 0
+
+# some useful functions here
+
+def moy(list):
+    moy=0
+    for n in list:
+        moy+=n
+    return moy/len(list)
+def send_to_telegram(message):
+    apiURL = f'https://api.telegram.org/bot{apiToken}/sendMessage'
+    try:
+        response = requests.post(apiURL, json={'chat_id': chatID, 'text': message})
+    except Exception as e:
+        print(e)
+def append_new_line(file_name, text_to_append):
+    with open(file_name, "a+") as file_object:
+        file_object.seek(0)
+        data = file_object.read(100)
+        if len(data) > 0:
+            file_object.turtle.write("\n")
+        file_object.turtle.write(text_to_append)
+def printandtelegram(message):
+    print(message)
+    send_to_telegram(message)
+def emergency_convert(symbol_to_sell):
+    i=0
+    for echange in echanges_str:
+        try:
+            if ex[echange].has['cancelAllOrders'] and ex[echange].fetchOpenOrders('SOL/USDT') != []:
+                ex[echange].cancelAllOrders(symbol_to_sell)
+                print(f"Successfully canceled all orders on {echange}.")
+            bal = get_balance(echange,symbol_to_sell)
+            if echange == "okx":
+                bal-=bal*0.02
+            if echange == "kucoin":
+                bal-=bal*0.015
+            if bal>(float(10)/float(ex[echange].fetch_ticker(symbol_to_sell)['last'])):
+                ex[echange].createMarketSellOrder(symbol=symbol_to_sell,amount=round(bal,3))
+                print(f"Successfully sold {bal} {symbol_to_sell[:len(symbol_to_sell)-5]} on {echange}.")
+            else: print(f"Not enough {symbol_to_sell[:len(symbol_to_sell)-5]} on {echange}.")
+            i+=1
+        except Exception as e:
+            print(f'Problem on {echange}. Error:    {e}')
+def get_balance(exchange,symbol):
+    if exchange == 'binance':
+        balance=ex['binance'].fetch_balance()
+        return balance['free'][symbol[:-5]]
+    if exchange == 'kucoin':
+        balance=ex['kucoin'].fetch_balance()
+        return balance['free'][symbol[:-5]]
+    if exchange == 'okx':
+        balance=ex['okx'].fetch_balance()
+        return balance['free'][symbol[:-5]]
+
+# function to check if an order is filled or not.
