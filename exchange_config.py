@@ -83,34 +83,34 @@ def append_new_line(file_name, text_to_append):
 def printandtelegram(message):
     print(message)
     send_to_telegram(message)
-def emergency_convert(symbol_to_sell):
+def emergency_convert(pair_to_sell):
     i=0
     for echange in echanges_str:
         try:
-            if ex[echange].has['cancelAllOrders'] and ex[echange].fetchOpenOrders('SOL/USDT') != []:
-                ex[echange].cancelAllOrders(symbol_to_sell)
+            if ex[echange].has['cancelAllOrders'] and ex[echange].fetchOpenOrders(pair_to_sell) != []:
+                ex[echange].cancelAllOrders(pair_to_sell)
                 print(f"Successfully canceled all orders on {echange}.")
-            bal = get_balance(echange,symbol_to_sell)
+            bal = get_balance(echange,pair_to_sell)
             if echange == "okx":
                 bal-=bal*0.02
             if echange == "kucoin":
                 bal-=bal*0.015
-            if bal>(float(10)/float(ex[echange].fetch_ticker(symbol_to_sell)['last'])):
-                ex[echange].createMarketSellOrder(symbol=symbol_to_sell,amount=round(bal,3))
-                print(f"Successfully sold {bal} {symbol_to_sell[:len(symbol_to_sell)-5]} on {echange}.")
-            else: print(f"Not enough {symbol_to_sell[:len(symbol_to_sell)-5]} on {echange}.")
+            if bal>(float(10)/float(ex[echange].fetch_ticker(pair_to_sell)['last'])):
+                ex[echange].createMarketSellOrder(symbol=pair_to_sell,amount=round(bal,3))
+                print(f"Successfully sold {bal} {pair_to_sell[:len(pair_to_sell)-5]} on {echange}.")
+            else: print(f"Not enough {pair_to_sell[:len(pair_to_sell)-5]} on {echange}.")
             i+=1
         except Exception as e:
             print(f'Problem on {echange}. Error:    {e}')
 def get_balance(exchange,symbol):
+    if symbol[-5:] == '/USDT':
+        symbol = symbol[:-5]
     if exchange == 'binance':
         balance=ex['binance'].fetch_balance()
-        return balance['free'][symbol[:-5]]
+        return balance['free'][symbol]
     if exchange == 'kucoin':
         balance=ex['kucoin'].fetch_balance()
-        return balance['free'][symbol[:-5]]
+        return balance['free'][symbol]
     if exchange == 'okx':
         balance=ex['okx'].fetch_balance()
-        return balance['free'][symbol[:-5]]
-
-# function to check if an order is filled or not.
+        return balance['free'][symbol]
