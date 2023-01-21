@@ -1,5 +1,6 @@
 ![Last commit](https://img.shields.io/github/last-commit/nelso0/BAS?style=plastic)
 ![Last commit](https://img.shields.io/github/languages/code-size/nelso0/BAS?style=plastic)
+![Last commit](https://img.shields.io/github/directory-file-count/nelso0/BAS?style=plastic)
 <p align="left">
   <img width="30%" height="30%" src="https://bas.teleporthq.app/playground_assets/bas-logo-rouge-600w.png">
 </p>
