@@ -2,7 +2,7 @@
   <img width="30%" height="30%" src="https://bas.teleporthq.app/playground_assets/bas-logo-rouge-600w.png">
 </p>
  
-[![Twitter: @nelsodot](https://img.shields.io/twitter/follow/nelsodot?style=social)](https://twitter.com/nelsodot)
+[![Twitter: @nelsodot](https://img.shields.io/twitter/follow/nelsodot?label=%40nelsodot&style=social)](https://twitter.com/nelsodot)
 [![GitHub @nelso0](https://img.shields.io/github/followers/nelso0?label=follow&style=social)](https://github.com/nelso0)
 
 
